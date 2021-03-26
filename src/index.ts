@@ -17,6 +17,7 @@ import * as https from 'https'
 import * as fs from 'fs'
 import protectSimple from './middleware/simple'
 import protectOathkeeper from './middleware/oathkeeper'
+import nocache from 'nocache'
 
 export const protect =
   config.securityMode === SECURITY_MODE_JWT ? protectOathkeeper : protectSimple
@@ -26,7 +27,7 @@ app.use(morgan('tiny'))
 app.use(cookieParser())
 app.set('view engine', 'hbs')
 
-app.use((req: Request, res: Response, next: NextFunction) => {
+app.use((_req: Request, res: Response, next: NextFunction) => {
   res.locals.projectName = config.projectName
   res.locals.baseUrl = config.baseUrl
   res.locals.pathPrefix = config.baseUrl ? '' : '/'
@@ -55,6 +56,9 @@ app.engine(
     },
   })
 )
+
+app.set('etag', false)
+app.use(nocache());
 
 if (process.env.NODE_ENV === 'stub') {
   // Setting NODE_ENV to "only-ui" disables all integration and only shows the UI. Useful
@@ -94,7 +98,7 @@ app.get('*', (_: Request, res: Response) => {
   res.redirect(config.baseUrl)
 })
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   console.error(err.stack)
   res.status(500).render('error', {
     message: JSON.stringify(err, null, 2),
