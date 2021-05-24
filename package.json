@@ -45,7 +45,7 @@
     "nocache": "^2.1.0",
     "node-fetch": "^2.6.1",
     "request": "^2.88.2",
-    "typescript": "^3.9.7",
+    "typescript": "^3.9.9",
     "url-join": "^4.0.1"
   },
   "devDependencies": {
